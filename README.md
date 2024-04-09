@@ -1,4 +1,5 @@
 # Urumbu SVG
+![Input image](./logo.png "Input image")
 ## Overview
 The urumbu_svg script is a modified version of Quentin Bolsee's urumbu_gcode.py, further modified by Robert Hart between January 13-14, 2022. It is designed to operate the Urumbu machine, a custom plotting device with X, Y, and a servo-driven Z-axis, translating SVG and XY file formats directly into movement commands. This Python script uses [axidraw](https://github.com/evil-mad/axidraw) parsing functionalities to convert a SVG to a set of polylines. It then convert those polylines to stepper control.
 
@@ -15,12 +16,13 @@ Clone the Repository: Clone or download this repository to your local machine.
 
 Dependencies: Ensure you have Python>=3.7 installed along with the following packages:
 
-numpy
-matplotlib
-pyserial
-argparse
-logging
-multiprocessing
+- numpy
+- matplotlib
+- pyserial
+- argparse
+- logging
+- multiprocessing
+
 Install the necessary Python packages using:
 
 ```bash
@@ -42,14 +44,14 @@ python urumbu_svg.py -f <filename> [options]
 ```
 Arguments:
 
--f, --filename: Specifies the filename of the .xy or .svg file to plot.
---feedrate: Sets the feedrate for XY motion (default: 5).
--a: COM port for the first stepper motor.
--b: COM port for the second stepper motor.
--s: COM port for the servo motor.
---max-width: Maximum width of the plot in mm (default: 50).
---max-height: Maximum height of the plot in mm (default: 50).
---preview: Runs the script in preview mode without controlling any hardware.
+- -f, --filename: Specifies the filename of the .xy or .svg file to plot.
+- --feedrate: Sets the feedrate for XY motion (default: 5).
+- -a: COM port for the first stepper motor.
+- -b: COM port for the second stepper motor.
+- -s: COM port for the servo motor.
+- --max-width: Maximum width of the plot in mm (default: 50).
+- --max-height: Maximum height of the plot in mm (default: 50).
+- --preview: Runs the script in preview mode without controlling any hardware.
 
 
 ## File Formats

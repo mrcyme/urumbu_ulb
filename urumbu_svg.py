@@ -297,10 +297,10 @@ def modules_manager(action_queue, modules_config, pos_transformer=None, preview=
             plt.ylabel('Y coordinate (mm)')
             plt.title('Plot of Paths')
             plt.axis('equal')  # Ensure aspect ratio is equal to make plot proportions correct
-            #plt.axis("off")
+            plt.axis("off")
             plt.plot(x_plot_low, y_plot_low, linestyle='-', color='b', label='Z_DOWN')
             plt.plot(x_plot_high, y_plot_high, linestyle='-', color='r', label='Z_UP')
-            plt.savefig(os.path.join("examples/out", "portrait_preview.png"))
+            #plt.savefig(os.path.join("examples/out", "logo.png"))
             plt.show()
             
             break
