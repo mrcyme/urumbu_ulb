@@ -1,5 +1,5 @@
 # Urumbu SVG
-![Input image](./logo.png "Input image")
+![Input image](./new_logo.png "Input image")
 ## Overview
 The urumbu_svg script is a modified version of Quentin Bolsee's urumbu_gcode.py, further modified by Robert Hart between January 13-14, 2022. It is designed to operate the Urumbu machine, a custom plotting device with X, Y, and a servo-driven Z-axis, translating SVG and XY file formats directly into movement commands. This Python script uses [axidraw](https://github.com/evil-mad/axidraw) parsing functionalities to convert a SVG to a set of polylines. It then convert those polylines to stepper control.
 
