@@ -73,10 +73,14 @@ class Servo(Module):
         self.delay_us = 0
 
     def pulse(self, delay_us):
-        if not self.preview:
-            self.write(delay_us.to_bytes(2, byteorder='little'))
+        try:
+            if not self.preview:
+                self.write(delay_us.to_bytes(2, byteorder='little'))
+        except serial.SerialException as e:
+            pass
         else:
             pass
+
 
     def fraction(self, f):
         p = int(self.pulse_min + (self.pulse_max - self.pulse_min) * f)
@@ -214,13 +218,14 @@ def modules_manager(action_queue, modules_config, pos_transformer=None, preview=
             p1[j] = m.steps/m.steps_per_unit
         x = 0.5*(p1[0] + p1[1])
         y = 0.5*(p1[0] - p1[1])
-        if not z_up:
-            x_plot_low.append(x)
-            y_plot_low.append(y)
-        else: 
-            x_plot_high.append(x)
-            y_plot_high.append(y)
-            
+        if preview:
+            if not z_up:
+                x_plot_low.append(x)
+                y_plot_low.append(y)
+            else: 
+                x_plot_high.append(x)
+                y_plot_high.append(y)
+                
             
     started = False
     while True:
@@ -252,7 +257,6 @@ def modules_manager(action_queue, modules_config, pos_transformer=None, preview=
                         dt = time.perf_counter() - t0
                 elif isinstance(sub_action, ServoAction):
                     z_up = not z_up
-                    print(z_up)
                     dt1 = 0
                     t0_pwm = t0
                     action_wait = WaitAction(sub_action.wait)
@@ -316,17 +320,17 @@ def parse_arguments():
                         help="filename for .xy file")
     parser.add_argument("--feedrate", type=float, default=5,
                         help="feedrate for XY motion")
-    parser.add_argument("-a", type=str, default="COM5",
+    parser.add_argument("-a", type=str, default="/dev/ttyACM0",
                         help="COM port for A")
-    parser.add_argument("-b", type=str, default="COM4",
+    parser.add_argument("-b", type=str, default="/dev/ttyACM1",
                         help="COM port for B")
-    parser.add_argument("-s", default="COM24",
+    parser.add_argument("-s", default="/dev/ttyACM2",
                     help="COM port for servo")
     parser.add_argument("--max-width", type=int, default=50,
                         help="max widht of the plot in mm") 
     parser.add_argument("--max-height", type=int, default=50,
                         help="max height of the plot in mm")
-    parser.add_argument("--preview", type=bool, default=True,
+    parser.add_argument("--preview", type=bool, default=False,
                         help="max height of the plot in mm")
     
 
@@ -373,6 +377,8 @@ def parse_svg(filename, action_queue, default_feedrate,  servo_up_action=None, s
                     else:
                         action_queue.put(Line([x_s, y_s], feedrate))
 
+    action_queue.put(servo_up_action)
+
 
 
 
@@ -389,7 +395,7 @@ def main():
             "baudrate": 921600,
             "axis": 0,
             "shaft_diameter": 19.872,
-            "steps_per_revolutions": 400,
+            "steps_per_revolutions": 16*200,
             "reverse": True
         },
         "b": {
@@ -398,7 +404,7 @@ def main():
             "baudrate": 921600,
             "axis": 1,
             "shaft_diameter": 19.872,
-            "steps_per_revolutions": 400,
+            "steps_per_revolutions": 16*200,
             "reverse": True
         },
         "servo": {
@@ -428,8 +434,8 @@ def main():
         parse_xy(filename, action_queue, feedrate, servo_up_action=ServoAction("servo", 1265, wait=0.5),
                  servo_down_action=ServoAction("servo", 800, wait=0.5))
     elif ext == ".svg":
-        parse_svg(filename, action_queue, feedrate, servo_up_action=ServoAction("servo", 1265, wait=0.5),
-                 servo_down_action=ServoAction("servo", 800, wait=0.5), max_width=max_width, max_height=max_height)
+        parse_svg(filename, action_queue, feedrate, servo_up_action=ServoAction("servo", 1200, wait=0.5),
+                 servo_down_action=ServoAction("servo", 600, wait=0.5), max_width=max_width, max_height=max_height)
     else:
         print(f"Unrecognized file type: '{ext}'")
     print(action_queue.qsize())
