@@ -53,8 +53,21 @@ class Module:
             return r == b"0"
 
 
+def gpio_control_stepper(steps, direction):
+    """ Control a stepper motor using GPIO Zero.
+    Args:
+        steps (int): Number of steps to rotate the stepper motor.
+        direction (bool): True for one direction, False for the opposite.
+    """
+    dir_pin.value = 1 if direction else 0  # Set direction
+    for _ in range(steps):
+        step_pin.on()
+        sleep(0.01)  # Step pulse duration
+        step_pin.off()
+        sleep(0.01)  # Time between steps
+
 class Stepper(Module):
-    def __init__(self, steps_per_unit, port, baudrate=BAUDRATE_DEFAULT, reverse=False, preview=False):
+    def __init__(self, steps_per_unit, port, step_pin=None, dir_pin = None, baudrate=BAUDRATE_DEFAULT, reverse=False, preview=False):
         super().__init__(port,  preview, baudrate)
         self.steps = 0
         self.reverse = reverse
@@ -65,7 +78,10 @@ class Stepper(Module):
         if self.reverse:
             forward = not forward
         if not self.preview:
-            self.write(b"f" if forward else b"r")
+            if self.com == "gpio":
+                gpio_control_stepper(1, 1) if forward else gpio_control_stepper(1, 0)
+            elif self.com == "serial":
+                self.write(b"f" if forward else b"r")
 
 
 class Servo(Module):
@@ -368,6 +384,7 @@ def parse_arguments():
                         help="filename for .xy file")
     parser.add_argument("--feedrate", type=float, default=5,
                         help="feedrate for XY motion")
+    parser.add_argument("--host", type=str, default="laptop")
     parser.add_argument("-a", type=str, default="/dev/ttyACM0",
                         help="COM port for A")
     parser.add_argument("-b", type=str, default="/dev/ttyACM1",
@@ -389,6 +406,13 @@ def main():
     action_queue = multiprocessing.Queue()
 
     args, _ = parse_arguments()
+    if args.host=="rpi":
+        from gpiozero import OutputDevice
+        # multistepping
+        gpio2 = OutputDevice(2, initial_value=True)
+        gpio3 = OutputDevice(3, initial_value=True)
+        gpio4 = OutputDevice(4, initial_value=True)
+
 
     modules_config = {
         "a": {
