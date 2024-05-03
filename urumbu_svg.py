@@ -38,7 +38,7 @@ class Module:
     def write(self, txt):
         if self.com == "serial":
             self.port.write(txt)
-        if self.com == "websocket":
+        if self.com == "rpi_gpio":
             pass
 
     def close(self):
@@ -315,31 +315,6 @@ def modules_manager(action_queue, modules_config, pos_transformer=None, preview=
 
         
 
-def parse_arguments():
-    usage_text = (
-        "Usage:  python urumbu_corexy.py [options]"
-    )
-    parser = argparse.ArgumentParser(description=usage_text)
-    parser.add_argument("-f", "--filename", type=str, required=True,
-                        help="filename for .xy file")
-    parser.add_argument("--feedrate", type=float, default=5,
-                        help="feedrate for XY motion")
-    parser.add_argument("-a", type=str, default="/dev/ttyACM0",
-                        help="COM port for A")
-    parser.add_argument("-b", type=str, default="/dev/ttyACM1",
-                        help="COM port for B")
-    parser.add_argument("-s", default="/dev/ttyACM2",
-                    help="COM port for servo")
-    parser.add_argument("--max-width", type=int, default=50,
-                        help="max widht of the plot in mm") 
-    parser.add_argument("--max-height", type=int, default=50,
-                        help="max height of the plot in mm")
-    parser.add_argument("--preview", type=bool, default=False,
-                        help="max height of the plot in mm")
-    
-
-    return parser.parse_known_args()
-
 
 def parse_xy(filename, action_queue,
              feedrate,
@@ -384,7 +359,30 @@ def parse_svg(filename, action_queue, default_feedrate,  servo_up_action=None, s
     action_queue.put(servo_up_action)
 
 
+def parse_arguments():
+    usage_text = (
+        "Usage:  python urumbu_corexy.py [options]"
+    )
+    parser = argparse.ArgumentParser(description=usage_text)
+    parser.add_argument("-f", "--filename", type=str, required=True,
+                        help="filename for .xy file")
+    parser.add_argument("--feedrate", type=float, default=5,
+                        help="feedrate for XY motion")
+    parser.add_argument("-a", type=str, default="/dev/ttyACM0",
+                        help="COM port for A")
+    parser.add_argument("-b", type=str, default="/dev/ttyACM1",
+                        help="COM port for B")
+    parser.add_argument("-s", default="/dev/ttyACM2",
+                    help="COM port for servo")
+    parser.add_argument("--max-width", type=int, default=50,
+                        help="max widht of the plot in mm") 
+    parser.add_argument("--max-height", type=int, default=50,
+                        help="max height of the plot in mm")
+    parser.add_argument("--preview", type=bool, default=False,
+                        help="max height of the plot in mm")
+    
 
+    return parser.parse_known_args()
 
 def main():
     multiprocessing.set_start_method('fork')
