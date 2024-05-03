@@ -14,8 +14,8 @@
 //
 
 
-#define DIR 26
-#define STEP 27
+#define DIR 2
+#define STEP 3
 #define MS1 0
 #define MS2 7
 #define MS3 6
@@ -26,7 +26,6 @@ void setup() {
   pinMode(STEP,OUTPUT);
   digitalWrite(DIR,LOW);
   pinMode(DIR,OUTPUT);
-  pinMode(BUTTON, INPUT_PULLUP);
    // 1/16 step
   pinMode(MS1, OUTPUT);
   digitalWrite(MS1, HIGH);
@@ -35,7 +34,8 @@ void setup() {
   pinMode(MS3, OUTPUT);
   digitalWrite(MS3, HIGH);
 }
-
+#define DIR 2
+#define STEP 3
 void loop() {
    if (Serial.available()) {
       char c = Serial.read();

@@ -26,16 +26,9 @@ void setup() {
 void loop() {
    uint16_t duration;
    if (Serial.available()) {
-      Serial.readBytes((char *)&duration,2);
-      if (duration == 65535L) {
-         // special command, reply with button value
-         int btn = digitalRead(BUTTON);
-         Serial.write(btn ? '1' : '0');
+      digitalWrite(SERVO,HIGH);
+      delayMicroseconds(duration);
+      digitalWrite(SERVO,LOW);
          }
-      else {
-         digitalWrite(SERVO,HIGH);
-         delayMicroseconds(duration);
-         digitalWrite(SERVO,LOW);
-         }
-      }
-   }
+    }
+   

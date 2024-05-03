@@ -5,8 +5,6 @@
 #
 #
 #
-
-
 import serial
 import time
 import multiprocessing
@@ -21,8 +19,10 @@ from pyaxidraw import axidraw
 BAUDRATE_DEFAULT = 921600
 
 class Module:
-    def __init__(self, port, preview, baudrate=BAUDRATE_DEFAULT):
+    def __init__(self, port, preview, baudrate=BAUDRATE_DEFAULT, com="serial"):
+        self.com = com
         self.port = None
+        self.ip = None
         self.baudrate = baudrate
         self.preview = preview
         if not self.preview:
@@ -36,7 +36,10 @@ class Module:
         return self.port is not None
 
     def write(self, txt):
-        self.port.write(txt)
+        if self.com == "serial":
+            self.port.write(txt)
+        if self.com == "websocket":
+            pass
 
     def close(self):
         self.port.close()
@@ -218,14 +221,14 @@ def modules_manager(action_queue, modules_config, pos_transformer=None, preview=
             p1[j] = m.steps/m.steps_per_unit
         x = 0.5*(p1[0] + p1[1])
         y = 0.5*(p1[0] - p1[1])
-        if preview:
-            if not z_up:
-                x_plot_low.append(x)
-                y_plot_low.append(y)
-            else: 
-                x_plot_high.append(x)
-                y_plot_high.append(y)
-                
+
+        if not z_up:
+            x_plot_low.append(x)
+            y_plot_low.append(y)
+        else: 
+            x_plot_high.append(x)
+            y_plot_high.append(y)
+            
             
     started = False
     while True:
@@ -256,6 +259,7 @@ def modules_manager(action_queue, modules_config, pos_transformer=None, preview=
                     while sub_action(dt):
                         dt = time.perf_counter() - t0
                 elif isinstance(sub_action, ServoAction):
+                    print("hello")
                     z_up = not z_up
                     dt1 = 0
                     t0_pwm = t0
